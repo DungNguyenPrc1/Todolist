@@ -1,0 +1,17 @@
+{
+  "action": {
+    "create": "create"
+  },
+  "properties": {
+    "backgroundColor": "background color",
+    "color": "color"
+  },
+  "common": {
+    "signup":"Sign Up",
+    "login":"Login",
+    "submit":"Submit",
+    "welcome": "Hello Walter, Kyran, Luke and Shall. Welcome to the challenge!",
+    "settingTitle": "Setting",
+    "textComponentTitle": "Text Component"
+  }
+}
