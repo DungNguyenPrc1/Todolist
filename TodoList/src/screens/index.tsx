@@ -4,7 +4,7 @@ import {navigationRef} from '@navigations/index';
 import {NavigationContainer} from '@react-navigation/native';
 import {StatusBar, AppState} from 'react-native';
 import styled from 'styled-components/native';
-
+import {navigationOptions} from '@navigations/index';
 import Text from '@components/Text';
 import VStack from '@components/VerticalStack';
 import HStack from '@components/HorizontalStack';
@@ -13,13 +13,20 @@ import i18n from '@locales/index';
 import SignInScreen from './SignInScreen';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import SignUpScreen from './SignUpScreen';
+import TodoScreen from './TodoScreen';
+import {useDispatch} from 'react-redux';
+import {launchAppHandler} from '@redux/application/reducer';
 
 const RootComponent = () => {
   const Stack = createNativeStackNavigator();
   const routeNameRef = useRef<string>();
-
+  const dispatch = useDispatch();
   // App on foreground handle
   const oldAppState = useRef(AppState.currentState);
+  useEffect(() => {
+    // console.log('123lauchApp');
+    dispatch(launchAppHandler());
+  }, []);
 
   useEffect(() => {
     const handleAppStateChange = (nextAppState: any) => {
@@ -56,6 +63,22 @@ const RootComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const AuthStack = () => {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen name="SignIn" component={SignInScreen} />
+        <Stack.Screen name="SignUp" component={SignUpScreen} />
+        <Stack.Screen name="Todo" component={TodoScreen} />
+      </Stack.Navigator>
+    );
+  };
+  const MainStack = () => {
+    return (
+      <Stack.Navigator>
+        <Stack.Screen name="Todo" component={TodoScreen} />
+      </Stack.Navigator>
+    );
+  };
   return (
     <NavigationContainer
       ref={navigationRef}
@@ -86,9 +109,11 @@ const RootComponent = () => {
         translucent
         backgroundColor="transparent"
       />
-      <Stack.Navigator>
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
+
+      <Stack.Navigator screenOptions={navigationOptions}>
+        <Stack.Screen name="auth" component={AuthStack} />
+
+        <Stack.Screen name="todo" component={MainStack} />
       </Stack.Navigator>
     </NavigationContainer>
   );

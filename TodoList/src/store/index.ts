@@ -20,6 +20,7 @@ const persistConfig: PersistConfig<ReducerType> = {
   version: 1,
   storage: AsyncStorage,
   timeout: undefined,
+  blacklist: [],
   // blacklist: [] as ReducerNameEnum[] as string[],
   // https://github.com/rt2zz/redux-persist#state-reconciler
   // https://blog.bam.tech/developer-news/redux-persist-how-it-works-and-how-to-change-the-structure-of-your-persisted-store

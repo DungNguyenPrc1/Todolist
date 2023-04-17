@@ -5,7 +5,11 @@ import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 
 import applicationReducer, {
   Slice as ApplicationSlice,
-} from './redux/application/reducer';
+} from '@redux/application/reducer';
+import authReducer, {
+  authSlice as AuthSlice,
+} from '@redux/authentication/reducer';
+import todoReducer, {Slice as TodoSlice} from '@redux/todo/reducer';
 
 const persistMetaConfig = {
   key: 'meta',
@@ -19,6 +23,8 @@ const persistMetaConfig = {
 
 const appReducer = {
   [ApplicationSlice.name]: applicationReducer,
+  [AuthSlice.name]: authReducer,
+  [TodoSlice.name]: todoReducer,
 };
 
 const appCombineReducer = combineReducers(appReducer);

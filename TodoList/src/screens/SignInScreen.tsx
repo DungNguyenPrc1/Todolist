@@ -5,8 +5,8 @@ import View from '@components/View';
 import Text from '@components/Text';
 import AntDesgin from 'react-native-vector-icons/AntDesign';
 import firebase from 'firebase/app';
+import {database, auth} from '@config/firebase';
 import {getAuth, signInWithEmailAndPassword} from 'firebase/auth';
-import {auth} from '../config/firebase';
 import i18n from '@locales/index';
 import TextInputField from '@components/TextInputField';
 import {Controller, useForm} from 'react-hook-form';
@@ -16,21 +16,25 @@ import {navigate} from '@navigations/index';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import Toast from '@components/Toast';
 
+import {useDispatch} from 'react-redux';
+import {loginAsync} from '@redux/authentication/reducer';
+import {collection} from 'firebase/firestore';
+
 // create a component
 const SignInScreen = ({navigation}: any) => {
+  const dispatch = useDispatch();
+ 
+  // console.log('database,', database);
+
   const {
     handleSubmit,
     control,
+    reset,
     formState: {isValid},
   } = useForm();
-  const onSubmit = ({email, password}: any) => {
-    signInWithEmailAndPassword(auth, email, password)
-      .then(userCredential => {
-        Toast.success('Login Success');
-      })
-      .catch(error => {
-        console.log('login failed', error.message);
-      });
+  const onSubmit = ({email, password}: {email: string; password: string}) => {
+    dispatch(loginAsync({email, password}));
+    reset();
   };
 
   return (

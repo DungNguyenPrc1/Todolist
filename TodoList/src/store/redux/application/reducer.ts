@@ -4,13 +4,23 @@ import {createSlice, createAction, PayloadAction} from '@reduxjs/toolkit';
 import type {RootState} from '../../index';
 // Define a type for the slice state
 
+interface DeviceInfor {
+  deviceId?: string;
+  deviceName?: string;
+  deviceToken?: string;
+  platform?: string;
+  osVersion?: string;
+}
+
 interface SliceState {
   isLoading: boolean;
+  deviceInfor: DeviceInfor;
 }
 
 // Define the initial state using that type
 const initialState = {
   isLoading: false,
+  deviceInfor: {},
 } as SliceState;
 
 export const Slice = createSlice({
@@ -20,10 +30,17 @@ export const Slice = createSlice({
     setLoading: (state: SliceState, {payload}: {payload: boolean}) => {
       state.isLoading = payload;
     },
+    setUserDeviceInfor: (
+      state: SliceState,
+      {payload}: PayloadAction<DeviceInfor>,
+    ) => {
+      state.deviceInfor = payload;
+    },
+    launchAppHandler: () => {},
   },
 });
 // actions
-export const {setLoading} = Slice.actions;
+export const {setLoading, launchAppHandler, setUserDeviceInfor} = Slice.actions;
 
 // selectors
 export const loadingSelector = (state: RootState) =>

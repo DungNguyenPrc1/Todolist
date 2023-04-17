@@ -7,12 +7,12 @@ import AntDesgin from 'react-native-vector-icons/AntDesign';
 import Spacer from '@components/Spacer';
 import i18n from '@locales/index';
 import TextInputField from '@components/TextInputField';
-import {Controller, useForm} from 'react-hook-form';
+import {Controller, useForm, useWatch} from 'react-hook-form';
 import {TouchableOpacity} from 'react-native';
-import {emailRegex} from '../helper/index';
+import {emailRegex, regexPassword} from '../helper/index';
 import {navigate} from '@navigations/index';
 import {createUserWithEmailAndPassword} from 'firebase/auth';
-import {auth} from '../config/firebase';
+import {auth} from '@config/firebase';
 import Toast from '@components/Toast';
 
 // create a component
@@ -20,13 +20,47 @@ const SignUpScreen = () => {
   const {
     handleSubmit,
     control,
+    reset,
     formState: {isValid},
-  } = useForm();
+  } = useForm({mode: 'onChange'});
+
+  const password = useWatch({control, name: 'password'});
+
+  function checkStrongPassword(value: number | string) {
+    if (!value) {
+      return;
+    }
+    if (value) {
+      switch (true) {
+        case value <= 2:
+          return <WeekPassword>{(value = 'Week password')}</WeekPassword>;
+
+        case value > 2 && value < 5:
+          return <MediumPassword>{(value = 'Medium password')}</MediumPassword>;
+
+        case value >= 5:
+          return <StrongPassword>{(value = 'Strong password')}</StrongPassword>;
+      }
+    }
+  }
+
+  const passwordTracker = {
+    uppercase: password?.match(regexPassword.atLeastOneUppercase),
+    lowercase: password?.match(regexPassword.atLeastOneLowercase),
+    number: password?.match(regexPassword.atLeastOneNumeric),
+    specialChar: password?.match(regexPassword.atLeastOneSpecialChar),
+    sixCharsOrGreater: password?.match(regexPassword.atLeast6character),
+  };
+  const passwordStrength = Object.values(passwordTracker).filter(
+    value => value,
+  ).length;
+
   const handleSignUp = ({email, password}: any) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then(userCredential => {
         Toast.success('SignUp Successfully');
         setTimeout(() => navigate('SignIn'), 2000);
+        reset();
       })
       .catch(err => {
         Toast.error(`${err.message}`);
@@ -76,13 +110,16 @@ const SignUpScreen = () => {
             fieldState: {error},
           }) => {
             return (
-              <TextInputField
-                onBlur={onBlur}
-                value={value}
-                onChangeText={onChange}
-                label="Password"
-                error={error}
-              />
+              <>
+                <TextInputField
+                  onBlur={onBlur}
+                  value={value}
+                  onChangeText={onChange}
+                  label="Password"
+                  error={error}
+                />
+                {!error ? checkStrongPassword(passwordStrength) : null}
+              </>
             );
           }}
         />
@@ -110,6 +147,16 @@ const SmallTextStyled = styled(Text[400].Normal)`
 const NormalTextStyled = styled(Text[400].Normal)`
   font-size: 18px;
   line-height: 20px;
+`;
+
+const WeekPassword = styled(NormalTextStyled)`
+  color: red;
+`;
+const MediumPassword = styled(NormalTextStyled)`
+  color: #feb466;
+`;
+const StrongPassword = styled(NormalTextStyled)`
+  color: green;
 `;
 
 const FooterStyled = styled(View)`
